@@ -8,10 +8,7 @@
 #include <sstream>
 #include <functional>
 #include <mutex>
-#include <iostream>
-#include "glove.hpp"
-#include <lcm/lcm_coretypes.h>
-#include <lcm/lcm-cpp.hpp>
+
 #include "ClientPlatformSpecific.hpp"
 #include "ManusSDK.h"
 
@@ -132,46 +129,21 @@ public:
 	std::vector<GestureProbability> probabilities;
 };
 
-class GlovedataPublisher
+typedef struct Glove_Data
 {
-public:
-	GlovedataPublisher() : lcm_("udpm://239.255.76.67:7667?ttl=255")
-	{
-		if (!lcm_.good())
-		{
-			std::cout << "LCM 初始化失败." << std::endl;
-		}
-	}
-
-	void publish()
-	{
-		glove msg;
-		// 根据实际情况为 msg.action 数组赋值，这里示例全部置 0
-		for (int i = 0; i < 40; ++i)
-		{
-			msg.action[i] = 0; // 可替换为实际计算得到的动作数据
-		}
-		// 发布到 "upper_action" 频道
-		lcm_.publish("glove", &msg);
-		std::cout << "Published upper_action message." << std::endl;
-	}
-
-	lcm::LCM lcm_;
-};
-
+	float left_hand[40];
+	float right_hand[40];
+} Glove_Data;
 
 class SDKClient : public SDKClientPlatformSpecific
 {
 public:
 	SDKClient();
 	~SDKClient();
-	GlovedataPublisher p_publisher;
-
-	ClientReturnCode
-	Initialize();
+	// Glove_Data glove_data;
+	ClientReturnCode Initialize();
 	ClientReturnCode Run();
 	ClientReturnCode ShutDown();
-
 	// Callbacks
 	static void OnConnectedCallback(const ManusHost *const p_Host);
 	static void OnDisconnectedCallback(const ManusHost *const p_Host);

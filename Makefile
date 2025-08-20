@@ -2,7 +2,7 @@ CXX      := g++
 
 #CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -g --std=c++17
 CXXFLAGS := -g --std=c++17
-LDFLAGS  := -L./ManusSDK/lib -lManusSDK -lncurses -lpthread -Wl,-rpath=./ManusSDK/lib -llcm
+LDFLAGS  := -L./ManusSDK/lib -lManusSDK -lncurses -lpthread  -Wl,-rpath=./ManusSDK/lib -llcm
 BUILD    := ./
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)

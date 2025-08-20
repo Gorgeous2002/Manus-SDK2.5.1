@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include <lcm/lcm_coretypes.h>
 #include <lcm/lcm-cpp.hpp>
 #include "glove.hpp"
 #include "ClientPlatformSpecific.hpp"
@@ -19,7 +18,10 @@ using ManusSDK::ClientLog;
 
 SDKClient* SDKClient::s_Instance = nullptr;
 
+// add lcm
 
+lcm::LCM lcm1("udpm://239.255.76.67:7667?ttl=255");
+glove my_glove;
 SDKClient::SDKClient()
 {
 	s_Instance = this;
@@ -144,9 +146,8 @@ ClientReturnCode SDKClient::Run()
 		}
 
 		m_ConsoleClearTickCount++;
-		std::this_thread::sleep_for(std::chrono::milliseconds(30));
+		// std::this_thread::sleep_for(std::chrono::milliseconds(30));
 	}
-	p_publisher.publish();
 	return ClientReturnCode::ClientReturnCode_Success;
 }
 
@@ -502,7 +503,6 @@ ClientReturnCode SDKClient::InitializeSDK()
 	ClientLog::print("[3] Core Remote - This will search for a MANUS Core running locally on your network");
 	std::string t_ConnectionTypeInput;
 	std::cin >> t_ConnectionTypeInput;
-
 	switch (t_ConnectionTypeInput[0])
 	{
 	case '1':
@@ -1340,6 +1340,7 @@ void SDKClient::PrintErgonomicsData()
 	if (m_LeftGloveErgoData.id == m_FirstLeftGloveID)
 	{
 		PrintHandErgoData(m_LeftGloveErgoData, true);
+
 	}
 	else
 	{
@@ -1354,6 +1355,14 @@ void SDKClient::PrintErgonomicsData()
 	{
 		ClientLog::print(" ...No Data...");
 	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		my_glove.action[i] = m_LeftGloveErgoData.data[i];
+		my_glove.action[i+20] = m_RightGloveErgoData.data[i+20];
+	}
+	
+	lcm1.publish("glove", &my_glove);
 
 	AdvanceConsolePosition(14);
 }
